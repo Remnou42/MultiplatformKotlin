@@ -21,27 +21,24 @@ import java.io.DataOutputStream
 @Preview
 fun App() {
     MaterialTheme {
-        //var showContent by remember { mutableStateOf(false) }
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-//            Button(onClick = { showContent = !showContent }) {
-//                Text("Click me!")
-//            }
 
-            Button(onClick = { performAction() }) {
-                Text("Perform Action")
+            Button(onClick = { led17On() }) {
+                Text("LED 17 ON")
+            }
+            Button(onClick = { led17Off() }) {
+                Text("LED 17 OFF")
             }
 
-//            AnimatedVisibility(showContent) {
-//                val greeting = remember { Greeting().greet() }
-//                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-//                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-//                    Text("Compose: $greeting")
-//                }
-//            }
+
         }
     }
 }
 
-fun performAction() {
+fun led17On() {
     Runtime.getRuntime().exec("gpioset gpiochip0 17=1")
+}
+
+fun led17Off() {
+    Runtime.getRuntime().exec("gpioset gpiochip0 17=0")
 }
