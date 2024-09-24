@@ -20,19 +20,18 @@ import java.io.DataOutputStream
 @Composable
 @Preview
 fun App() {
-    val processing = Runtime.getRuntime().exec("gpioset gpiochip0 17=1")
-    val process = Runtime.getRuntime().exec("bash")
-    val os = DataOutputStream(process.outputStream)
-
-    os.writeBytes("gpioset gpiochip0 17=1")
-    os.flush()
-
+//    val processing = Runtime.getRuntime().exec("gpioset gpiochip0 17=1")
     MaterialTheme {
         var showContent by remember { mutableStateOf(false) }
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             Button(onClick = { showContent = !showContent }) {
                 Text("Click me!")
             }
+
+            Button(onClick = { performAction() }) {
+                Text("Perform Action")
+            }
+
             AnimatedVisibility(showContent) {
                 val greeting = remember { Greeting().greet() }
                 Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -42,4 +41,12 @@ fun App() {
             }
         }
     }
+}
+
+fun performAction() {
+    val process = Runtime.getRuntime().exec("bash")
+    val os = DataOutputStream(process.outputStream)
+
+    os.writeBytes("gpioset gpiochip0 17=1")
+    os.flush()
 }
