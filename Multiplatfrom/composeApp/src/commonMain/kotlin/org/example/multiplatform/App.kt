@@ -20,6 +20,7 @@ import java.io.DataOutputStream
 @Composable
 @Preview
 fun App() {
+    val processing = Runtime.getRuntime().exec("gpioset gpiochip0 17=1")
     val process = Runtime.getRuntime().exec("bash")
     val os = DataOutputStream(process.outputStream)
 
