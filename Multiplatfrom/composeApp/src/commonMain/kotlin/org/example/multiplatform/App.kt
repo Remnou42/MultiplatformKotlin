@@ -40,7 +40,6 @@ fun App() {
                 Text("Get GPIO 27 State")
             }
 
-            // Display the output from GPIO command
             Text(gpioOutput)
 
         }
@@ -48,17 +47,30 @@ fun App() {
 }
 
 fun led17On() {
-    Runtime.getRuntime().exec("gpioset gpiochip0 17=1")
+    try {
+        Runtime.getRuntime().exec("gpioset gpiochip0 17=1")
+    } catch (e: Exception) {
+        println(e)
+    }
 }
 
 fun led17Off() {
-    Runtime.getRuntime().exec("gpioset gpiochip0 17=0")
+    try {
+        Runtime.getRuntime().exec("gpioset gpiochip0 17=0")
+    } catch (e: Exception) {
+        println(e)
+    }
 }
 
 fun get27(): String {
-    val process = Runtime.getRuntime().exec("gpioget gpiochip0 27")
-    val reader = BufferedReader(InputStreamReader(process.inputStream))
-    val output = reader.readLine()
-    reader.close()
-    return output
+    return try {
+        val process = Runtime.getRuntime().exec("gpioget gpiochip0 27")
+        val reader = BufferedReader(InputStreamReader(process.inputStream))
+        val output = reader.readLine()
+        reader.close()
+        return output
+    } catch (e: Exception) {
+        println(e)
+        "Error"
+    }
 }
