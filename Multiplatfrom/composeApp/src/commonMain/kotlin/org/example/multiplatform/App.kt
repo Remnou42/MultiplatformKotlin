@@ -111,7 +111,7 @@ fun readFromBarcodeScanner(): String {
         val barcode = reader.readLine() // Read the barcode data
 
         reader.close()
-        barcode // Return the barcode string
+        barcode  ?: "No barcode detected or error occurred"// Return the barcode string
 
     } catch (e: IOException) {
         println(e)
