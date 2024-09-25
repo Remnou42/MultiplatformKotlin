@@ -97,7 +97,8 @@ fun servoAngle(angle: Int) {
 }
 
 fun readFromBarcodeScanner(): String {
-    val serialPort = SerialPort.getCommPorts().firstOrNull { it.descriptivePortName.contains("tty") } // Adjust according to your setup
+    //This line seems to be the issue
+    val serialPort = SerialPort.getCommPort("/dev/serial0")
     return if (serialPort != null) {
         serialPort.openPort()
         val output = StringBuilder()
