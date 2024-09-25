@@ -99,25 +99,26 @@ fun servoAngle(angle: Int) {
 fun readFromBarcodeScanner(): String {
     //This line seems to be the issue
     val serialPort = SerialPort.getCommPort("/dev/serial0")
-    return if (serialPort != null) {
-        serialPort.openPort()
-        val output = StringBuilder()
-        try {
-            // Read data from the scanner
-            while (true) {
-                if (serialPort.bytesAvailable() > 0) {
-                    val data = ByteArray(serialPort.bytesAvailable())
-                    serialPort.readBytes(data, data.size.toLong())
-                    output.append(String(data))
-                    // Break on a newline character if that’s how the barcode data is terminated
-                    if (output.contains("\n")) break
-                }
-            }
-        } finally {
-            serialPort.closePort()
-        }
-        output.toString().trim()
-    } else {
-        "No barcode scanner found."
-    }
+//    return if (serialPort != null) {
+//        serialPort.openPort()
+//        val output = StringBuilder()
+//        try {
+//            // Read data from the scanner
+//            while (true) {
+//                if (serialPort.bytesAvailable() > 0) {
+//                    val data = ByteArray(serialPort.bytesAvailable())
+//                    serialPort.readBytes(data, data.size.toLong())
+//                    output.append(String(data))
+//                    // Break on a newline character if that’s how the barcode data is terminated
+//                    if (output.contains("\n")) break
+//                }
+//            }
+//        } finally {
+//            serialPort.closePort()
+//        }
+//        output.toString().trim()
+//    } else {
+//        "No barcode scanner found."
+//    }
+    return "No barcode scanner found."
 }
