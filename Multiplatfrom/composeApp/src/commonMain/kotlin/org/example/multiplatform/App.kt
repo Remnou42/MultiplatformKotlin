@@ -20,7 +20,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-import com.fazecast.jSerialComm.SerialPort
+
+import java.io.FileInputStream
+import java.io.IOException
+
 
 @Composable
 @Preview
@@ -56,12 +59,12 @@ fun App() {
             Button(onClick = { servoAngle(2500) }) {
                 Text("Angle 180°")
             }
-//
-//            Button(onClick = { barcodeOutput = readFromBarcodeScanner() }) {
-//                Text("Scan Barcode")
-//            }
-//
-//            Text(barcodeOutput)
+
+            Button(onClick = { barcodeOutput = readFromBarcodeScanner() }) {
+                Text("Scan Barcode")
+            }
+
+            Text(barcodeOutput)
 
         }
     }
@@ -96,36 +99,26 @@ fun servoAngle(angle: Int) {
     }
 }
 
-//fun readFromBarcodeScanner(): String {
-//    //This line seems to be the issue
-//    val comPort = SerialPort.getCommPorts()[0]
-//    comPort.openPort()
-//
-//    val result = StringBuilder()  // To store the read data
-//
-//    try {
-//        while (true) {
-//            // Wait until data is available to read
-//            while (comPort.bytesAvailable() == 0) {
-//                Thread.sleep(20)
-//            }
-//
-//            // Create a buffer for reading the available bytes
-//            val readBuffer = ByteArray(comPort.bytesAvailable())
-//            val numRead = comPort.readBytes(readBuffer, readBuffer.size.toLong())
-//
-//            // Append the read data to the result
-//            result.append(String(readBuffer, 0, numRead))
-//            println("Read $numRead bytes.")
-//
-//            // Optionally break the loop after reading (adjust this logic as needed)
-//            if (numRead > 0) break
-//        }
-//    } catch (e: Exception) {
-//        e.printStackTrace()
-//    } finally {
-//        comPort.closePort()
-//    }
-//
-//    return result.toString()  // Return the accumulated data as a string
-//}
+fun readFromBarcodeScanner(): String {
+    //This line seems to be the issue
+    val serialPort = "/dev/serial0" // Replace with your serial port path
+    var result: String = null.toString()
+
+    try {
+        // Open the serial port as a file input stream
+        FileInputStream(serialPort).use { inputStream ->
+            val buffer = ByteArray(1024) // Buffer to hold incoming data
+            val bytesRead = inputStream.read(buffer) // Read from the stream
+
+            if (bytesRead > 0) {
+                // Convert the read bytes to a string
+                result = String(buffer, 0, bytesRead)
+                println("Read $bytesRead bytes: $result")
+            }
+        }
+    } catch (e: IOException) {
+        e.printStackTrace()
+    }
+
+    return result
+}
