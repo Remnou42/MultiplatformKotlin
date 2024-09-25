@@ -20,10 +20,13 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
+import com.fazecast.jSerialComm.SerialPort
+
 @Composable
 @Preview
 fun App() {
     var gpioOutput by remember { mutableStateOf("Press to get GPIO 27 state") }
+    var barcodeOutput by remember { mutableStateOf("Scan a barcode") }
 
     MaterialTheme {
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -54,6 +57,11 @@ fun App() {
                 Text("Angle 180°")
             }
 
+            Button(onClick = { barcodeOutput = readFromBarcodeScanner() }) {
+                Text("Scan Barcode")
+            }
+
+            Text(barcodeOutput)
 
         }
     }
@@ -85,5 +93,30 @@ fun servoAngle(angle: Int) {
         Runtime.getRuntime().exec("pigs s 18 $angle")
     } catch (e: Exception) {
         println(e)
+    }
+}
+
+fun readFromBarcodeScanner(): String {
+    val serialPort = SerialPort.getCommPorts().firstOrNull { it.descriptivePortName.contains("tty") } // Adjust according to your setup
+    return if (serialPort != null) {
+        serialPort.openPort()
+        val output = StringBuilder()
+        try {
+            // Read data from the scanner
+            while (true) {
+                if (serialPort.bytesAvailable() > 0) {
+                    val data = ByteArray(serialPort.bytesAvailable())
+                    serialPort.readBytes(data, data.size.toLong())
+                    output.append(String(data))
+                    // Break on a newline character if that’s how the barcode data is terminated
+                    if (output.contains("\n")) break
+                }
+            }
+        } finally {
+            serialPort.closePort()
+        }
+        output.toString().trim()
+    } else {
+        "No barcode scanner found."
     }
 }
