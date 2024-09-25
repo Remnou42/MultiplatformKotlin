@@ -100,25 +100,21 @@ fun servoAngle(angle: Int) {
 }
 
 fun readFromBarcodeScanner(): String {
-    //This line seems to be the issue
-    val serialPort = "/dev/serial0" // Replace with your serial port path
-    var result: String = null.toString()
+    val portName = "/dev/serial0" // Adjust this according to your setup (e.g., /dev/ttyS0)
 
-    try {
-        // Open the serial port as a file input stream
-        FileInputStream(serialPort).use { inputStream ->
-            val buffer = ByteArray(1024) // Buffer to hold incoming data
-            val bytesRead = inputStream.read(buffer) // Read from the stream
+    return try {
+        // Open serial port
+        val inputStream = FileInputStream(portName)
 
-            if (bytesRead > 0) {
-                // Convert the read bytes to a string
-                result = String(buffer, 0, bytesRead)
-                println("Read $bytesRead bytes: $result")
-            }
-        }
+        // Read data from the serial port
+        val reader = BufferedReader(InputStreamReader(inputStream))
+        val barcode = reader.readLine() // Read the barcode data
+
+        reader.close()
+        barcode // Return the barcode string
+
     } catch (e: IOException) {
-        e.printStackTrace()
+        println(e)
+        "Error reading barcode"
     }
-
-    return result
 }
