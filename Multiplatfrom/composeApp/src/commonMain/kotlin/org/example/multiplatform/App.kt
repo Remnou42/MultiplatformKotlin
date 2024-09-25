@@ -20,9 +20,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-
-import java.io.FileInputStream
-import java.io.IOException
+import purejavacomm.CommPortIdentifier
+import purejavacomm.SerialPort
+import java.io.InputStream
 
 
 @Composable
@@ -100,21 +100,29 @@ fun servoAngle(angle: Int) {
 }
 
 fun readFromBarcodeScanner(): String {
-    val portName = "/dev/serial0" // Adjust this according to your setup (e.g., /dev/ttyS0)
+    var barcode = ""
+    try {
+        val portId = CommPortIdentifier.getPortIdentifier("/dev/serial0") // Adjust the port name as needed
+        val serialPort = portId.open("BarcodeScanner", 2000) as SerialPort
+        serialPort.setSerialPortParams(
+            9600,
+            SerialPort.DATABITS_8,
+            SerialPort.STOPBITS_1,
+            SerialPort.PARITY_NONE
+        )
 
-    return try {
-        // Open serial port
-        val inputStream = FileInputStream(portName)
+        val inputStream: InputStream = serialPort.inputStream
+        val buffer = ByteArray(1024)
+        var len: Int
+        while (inputStream.read(buffer).also { len = it } > -1) {
+            barcode += String(buffer, 0, len)
+        }
 
-        // Read data from the serial port
-        val reader = BufferedReader(InputStreamReader(inputStream))
-        val barcode = reader.readLine() // Read the barcode data
-
-        reader.close()
-        barcode  ?: "No barcode detected or error occurred"// Return the barcode string
-
-    } catch (e: IOException) {
+        inputStream.close()
+        serialPort.close()
+    } catch (e: Exception) {
         println(e)
-        "Error reading barcode"
+        barcode = "Error reading barcode"
     }
+    return barcode
 }
