@@ -98,33 +98,34 @@ fun servoAngle(angle: Int) {
 
 fun readFromBarcodeScanner(): String {
     //This line seems to be the issue
-    val serialPort = SerialPort.getCommPort("/dev/serial0")
+    val comPort = SerialPort.getCommPorts()[0]
+    comPort.openPort()
 
-    return if (serialPort.openPort()) {
-        val output = StringBuilder()
-        try {
-            // Read data from the scanner
-            while (true) {
-                // Check if there are bytes available to read
-                if (serialPort.bytesAvailable() > 0) {
-                    // Create a byte array to hold available data
-                    val data = ByteArray(serialPort.bytesAvailable())
-                    // Read the bytes into the array (still using toLong())
-                    val bytesRead = serialPort.readBytes(data, data.size.toLong())
-                    // Only append the bytes actually read
-                    output.append(String(data, 0, bytesRead))
-                    // If the barcode scanner uses newline as delimiter, break on it
-                    if (output.contains("\n")) break
-                } else {
-                    // Add a small delay to avoid a busy loop (adjust timing if needed)
-                    Thread.sleep(50)
-                }
+    val result = StringBuilder()  // To store the read data
+
+    try {
+        while (true) {
+            // Wait until data is available to read
+            while (comPort.bytesAvailable() == 0) {
+                Thread.sleep(20)
             }
-        } finally {
-            serialPort.closePort()
+
+            // Create a buffer for reading the available bytes
+            val readBuffer = ByteArray(comPort.bytesAvailable())
+            val numRead = comPort.readBytes(readBuffer, readBuffer.size.toLong())
+
+            // Append the read data to the result
+            result.append(String(readBuffer, 0, numRead))
+            println("Read $numRead bytes.")
+
+            // Optionally break the loop after reading (adjust this logic as needed)
+            if (numRead > 0) break
         }
-        output.toString().trim()
-    } else {
-        "Unable to open the barcode scanner port."
+    } catch (e: Exception) {
+        e.printStackTrace()
+    } finally {
+        comPort.closePort()
     }
+
+    return result.toString()  // Return the accumulated data as a string
 }
