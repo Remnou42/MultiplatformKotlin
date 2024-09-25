@@ -56,12 +56,12 @@ fun App() {
             Button(onClick = { servoAngle(2500) }) {
                 Text("Angle 180°")
             }
-
-            Button(onClick = { barcodeOutput = readFromBarcodeScanner() }) {
-                Text("Scan Barcode")
-            }
-
-            Text(barcodeOutput)
+//
+//            Button(onClick = { barcodeOutput = readFromBarcodeScanner() }) {
+//                Text("Scan Barcode")
+//            }
+//
+//            Text(barcodeOutput)
 
         }
     }
@@ -97,35 +97,35 @@ fun servoAngle(angle: Int) {
 }
 
 fun readFromBarcodeScanner(): String {
-    //This line seems to be the issue
-    val comPort = SerialPort.getCommPorts()[0]
-    comPort.openPort()
-
-    val result = StringBuilder()  // To store the read data
-
-    try {
-        while (true) {
-            // Wait until data is available to read
-            while (comPort.bytesAvailable() == 0) {
-                Thread.sleep(20)
-            }
-
-            // Create a buffer for reading the available bytes
-            val readBuffer = ByteArray(comPort.bytesAvailable())
-            val numRead = comPort.readBytes(readBuffer, readBuffer.size.toLong())
-
-            // Append the read data to the result
-            result.append(String(readBuffer, 0, numRead))
-            println("Read $numRead bytes.")
-
-            // Optionally break the loop after reading (adjust this logic as needed)
-            if (numRead > 0) break
-        }
-    } catch (e: Exception) {
-        e.printStackTrace()
-    } finally {
-        comPort.closePort()
-    }
-
-    return result.toString()  // Return the accumulated data as a string
+//    //This line seems to be the issue
+//    val comPort = SerialPort.getCommPorts()[0]
+//    comPort.openPort()
+//
+//    val result = StringBuilder()  // To store the read data
+//
+//    try {
+//        while (true) {
+//            // Wait until data is available to read
+//            while (comPort.bytesAvailable() == 0) {
+//                Thread.sleep(20)
+//            }
+//
+//            // Create a buffer for reading the available bytes
+//            val readBuffer = ByteArray(comPort.bytesAvailable())
+//            val numRead = comPort.readBytes(readBuffer, readBuffer.size.toLong())
+//
+//            // Append the read data to the result
+//            result.append(String(readBuffer, 0, numRead))
+//            println("Read $numRead bytes.")
+//
+//            // Optionally break the loop after reading (adjust this logic as needed)
+//            if (numRead > 0) break
+//        }
+//    } catch (e: Exception) {
+//        e.printStackTrace()
+//    } finally {
+//        comPort.closePort()
+//    }
+//
+//    return result.toString()  // Return the accumulated data as a string
 }
