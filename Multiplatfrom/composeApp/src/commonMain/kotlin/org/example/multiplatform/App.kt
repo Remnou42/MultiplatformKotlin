@@ -96,7 +96,7 @@ fun servoAngle(angle: Int) {
     }
 }
 
-fun readFromBarcodeScanner(): String {
+//fun readFromBarcodeScanner(): String {
 //    //This line seems to be the issue
 //    val comPort = SerialPort.getCommPorts()[0]
 //    comPort.openPort()
@@ -128,4 +128,4 @@ fun readFromBarcodeScanner(): String {
 //    }
 //
 //    return result.toString()  // Return the accumulated data as a string
-}
+//}
