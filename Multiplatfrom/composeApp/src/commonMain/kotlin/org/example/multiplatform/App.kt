@@ -99,26 +99,27 @@ fun servoAngle(angle: Int) {
 fun readFromBarcodeScanner(): String {
     //This line seems to be the issue
     val serialPort = SerialPort.getCommPort("/dev/serial0")
-//    return if (serialPort != null) {
-//        serialPort.openPort()
-//        val output = StringBuilder()
-//        try {
-//            // Read data from the scanner
-//            while (true) {
-//                if (serialPort.bytesAvailable() > 0) {
-//                    val data = ByteArray(serialPort.bytesAvailable())
-//                    serialPort.readBytes(data, data.size.toLong())
-//                    output.append(String(data))
-//                    // Break on a newline character if that’s how the barcode data is terminated
-//                    if (output.contains("\n")) break
-//                }
-//            }
-//        } finally {
-//            serialPort.closePort()
-//        }
-//        output.toString().trim()
-//    } else {
-//        "No barcode scanner found."
-//    }
-    return "No barcode scanner found."
+    return if (serialPort.openPort()) {
+        val output = StringBuilder()
+        try {
+            // Read data from the scanner
+            while (true) {
+                // Check if there are bytes available to read
+                if (serialPort.bytesAvailable() > 0) {
+                    // Create a byte array of the available size
+                    val data = ByteArray(serialPort.bytesAvailable())
+                    // Read the bytes directly using Int for size
+                    val bytesRead = serialPort.readBytes(data, data.size.toLong()) // No need for toLong()
+                    output.append(String(data, 0, bytesRead)) // Append only the bytes read
+                    // Break on a newline character if that’s how the barcode data is terminated
+                    if (output.contains("\n")) break
+                }
+            }
+        } finally {
+            serialPort.closePort()
+        }
+        output.toString().trim()
+    } else {
+        "Unable to open the barcode scanner port."
+    }
 }
