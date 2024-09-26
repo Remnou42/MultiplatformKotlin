@@ -84,13 +84,13 @@ fun App() {
 
             Button(
                 onClick = {
-                    // Disable the button while scanning
+                    // Désactive le bouton pendant le scan
                     isScanning = true
-                    // Run barcode scan in the background
+                    // Scan le code barre en fond
                     CoroutineScope(Dispatchers.Main).launch {
                         led(1, 23)
                         barcodeOutput = readFromBarcodeScanner()
-                        isScanning = false // Re-enable the button after scanning
+                        isScanning = false // Réactive le bouton
                         led(0, 23)
 
                         if (barcodeOutput == "X001VV418H") {
@@ -100,7 +100,7 @@ fun App() {
                         }
                     }
                 },
-                enabled = !isScanning // Disable if scanning is in progress
+                enabled = !isScanning // Désactive le bouton pendant le scan
             ) {
                 Text("Scan Barcode")
             }
