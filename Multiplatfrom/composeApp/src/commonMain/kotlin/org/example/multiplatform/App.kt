@@ -27,6 +27,7 @@ import java.io.IOException
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -44,13 +45,13 @@ fun App() {
 
             Button(onClick = {
                 CoroutineScope(Dispatchers.Main).launch {
-                led17(1) }}) {
+                led(1, 17) }}) {
                 Text("LED 17 ON")
             }
 
             Button(onClick = {
                 CoroutineScope(Dispatchers.Main).launch {
-                led17(0) }}) {
+                led(0, 17) }}) {
                 Text("LED 17 OFF")
             }
 
@@ -87,8 +88,20 @@ fun App() {
                     isScanning = true
                     // Run barcode scan in the background
                     CoroutineScope(Dispatchers.Main).launch {
+                        led(1, 23)
                         barcodeOutput = readFromBarcodeScanner()
                         isScanning = false // Re-enable the button after scanning
+                        led(0, 23)
+
+                        if (barcodeOutput == "X001VV418H") {
+                            led(1, 24)
+                            delay(3000)
+                            led(0, 24)
+                        } else {
+                            led(1, 17)
+                            delay(3000)
+                            led(0, 17)
+                        }
                     }
                 },
                 enabled = !isScanning // Disable if scanning is in progress
@@ -104,10 +117,10 @@ fun App() {
 }
 
 // Fonction pour allumer ou éteindre la LED 17
-suspend fun led17(value: Int) {
+suspend fun led(value: Int, pin: Int) {
     withContext(Dispatchers.IO) {
         try {
-            Runtime.getRuntime().exec("gpioset gpiochip0 17=$value")
+            Runtime.getRuntime().exec("gpioset gpiochip0 $pin=$value")
         } catch (e: Exception) {
             println(e)
         }
