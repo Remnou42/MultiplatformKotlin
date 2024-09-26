@@ -41,29 +41,42 @@ fun App() {
     MaterialTheme {
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
 
-            Button(onClick = { led17(1) }) {
+            Button(onClick = {
+                CoroutineScope(Dispatchers.Main).launch {
+                led17(1) }}) {
                 Text("LED 17 ON")
             }
 
-            Button(onClick = { led17(0) }) {
+            Button(onClick = {
+                CoroutineScope(Dispatchers.Main).launch {
+                led17(0) }}) {
                 Text("LED 17 OFF")
             }
 
-            Button(onClick = { gpioOutput = get27() }) {
+            Button(onClick = {
+                CoroutineScope(Dispatchers.Main).launch {
+                    gpioOutput = get27() }
+            }) {
                 Text("Get GPIO 27 State")
             }
 
             Text(gpioOutput)
 
-            Button(onClick = { servoAngle(500) }) {
+            Button(onClick = {
+                CoroutineScope(Dispatchers.Main).launch {
+                servoAngle(500) }}) {
                 Text("Angle 0°")
             }
 
-            Button(onClick = { servoAngle(1500) }) {
+            Button(onClick = {
+                CoroutineScope(Dispatchers.Main).launch {
+                servoAngle(1500) }}) {
                 Text("Angle 90°")
             }
 
-            Button(onClick = { servoAngle(2500) }) {
+            Button(onClick = {
+                CoroutineScope(Dispatchers.Main).launch {
+                servoAngle(2500) }}) {
                 Text("Angle 180°")
             }
 
@@ -82,34 +95,40 @@ fun App() {
 }
 
 // Fonction pour allumer ou éteindre la LED 17
-fun led17(value: Int) {
-    try {
-        Runtime.getRuntime().exec("gpioset gpiochip0 17=$value")
-    } catch (e: Exception) {
-        println(e)
+suspend fun led17(value: Int) {
+    withContext(Dispatchers.IO) {
+        try {
+            Runtime.getRuntime().exec("gpioset gpiochip0 17=$value")
+        } catch (e: Exception) {
+            println(e)
+        }
     }
 }
 
 // Fonction pour obtenir l'état du GPIO 27. Execute la commande et lie la sortie
-fun get27(): String {
-    return try {
-        val process = Runtime.getRuntime().exec("gpioget gpiochip0 27")
-        val reader = BufferedReader(InputStreamReader(process.inputStream))
-        val output = reader.readLine()
-        reader.close()
-        return output
-    } catch (e: Exception) {
-        println(e)
-        "Error"
+suspend fun get27(): String {
+    return withContext(Dispatchers.IO) {
+        try {
+            val process = Runtime.getRuntime().exec("gpioget gpiochip0 27")
+            val reader = BufferedReader(InputStreamReader(process.inputStream))
+            val output = reader.readLine()
+            reader.close()
+            output
+        } catch (e: Exception) {
+            println(e)
+            "Error"
+        }
     }
 }
 
 // Fonction pour définir l'angle du servo
-fun servoAngle(angle: Int) {
-    try {
-        Runtime.getRuntime().exec("pigs s 18 $angle")
-    } catch (e: Exception) {
-        println(e)
+suspend fun servoAngle(angle: Int) {
+    withContext(Dispatchers.IO) {
+        try {
+            Runtime.getRuntime().exec("pigs s 18 $angle")
+        } catch (e: Exception) {
+            println(e)
+        }
     }
 }
 
