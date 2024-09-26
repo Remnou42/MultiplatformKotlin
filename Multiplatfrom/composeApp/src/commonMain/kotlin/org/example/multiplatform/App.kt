@@ -36,6 +36,7 @@ fun App() {
     // Créé les variables d'état pour les sorties GPIO et les codes-barres
     var gpioOutput by remember { mutableStateOf("Press to get GPIO 27 state") }
     var barcodeOutput by remember { mutableStateOf("Scan a barcode") }
+    var isScanning by remember { mutableStateOf(false) }
 
     // Crée une colonne pour afficher les boutons et les textes
     MaterialTheme {
@@ -80,13 +81,21 @@ fun App() {
                 Text("Angle 180°")
             }
 
-            Button(onClick = {
-                CoroutineScope(Dispatchers.Main).launch {
-                    barcodeOutput = readFromBarcodeScanner()
-                }
-            }) {
+            Button(
+                onClick = {
+                    // Disable the button while scanning
+                    isScanning = true
+                    // Run barcode scan in the background
+                    CoroutineScope(Dispatchers.Main).launch {
+                        barcodeOutput = readFromBarcodeScanner()
+                        isScanning = false // Re-enable the button after scanning
+                    }
+                },
+                enabled = !isScanning // Disable if scanning is in progress
+            ) {
                 Text("Scan Barcode")
             }
+
 
             Text(barcodeOutput)
 
