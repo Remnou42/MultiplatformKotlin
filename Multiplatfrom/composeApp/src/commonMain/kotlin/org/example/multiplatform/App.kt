@@ -75,6 +75,7 @@ fun App() {
                 Text("Scan Barcode")
             }
 
+            Text(barcodeOutput)
 
         }
     }
