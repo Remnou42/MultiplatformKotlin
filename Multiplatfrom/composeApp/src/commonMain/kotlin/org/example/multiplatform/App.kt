@@ -94,13 +94,9 @@ fun App() {
                         led(0, 23)
 
                         if (barcodeOutput == "X001VV418H") {
-                            led(1, 24)
-                            delay(3000)
-                            led(0, 24)
+                            ledBlink(24, 3000)
                         } else {
-                            led(1, 17)
-                            delay(3000)
-                            led(0, 17)
+                            ledBlink(17, 3000)
                         }
                     }
                 },
@@ -108,7 +104,6 @@ fun App() {
             ) {
                 Text("Scan Barcode")
             }
-
 
             Text(barcodeOutput)
 
@@ -121,6 +116,18 @@ suspend fun led(value: Int, pin: Int) {
     withContext(Dispatchers.IO) {
         try {
             Runtime.getRuntime().exec("gpioset gpiochip0 $pin=$value")
+        } catch (e: Exception) {
+            println(e)
+        }
+    }
+}
+
+suspend fun ledBlink(pin: Int, delay: Long) {
+    withContext(Dispatchers.IO) {
+        try {
+            led(pin, 1)
+            delay(delay)
+            led(pin, 0)
         } catch (e: Exception) {
             println(e)
         }
