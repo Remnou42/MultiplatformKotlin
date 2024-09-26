@@ -64,7 +64,7 @@ fun App() {
                 Text("Angle 180°")
             }
 
-            Button(onClick = { barcodeOutput = prepareThread() }) {
+            Button(onClick = { barcodeOutput = readFromBarcodeScanner() }) {
                 Text("Scan Barcode")
             }
 
@@ -74,13 +74,13 @@ fun App() {
     }
 }
 
-fun prepareThread(): String {
-    var output = "No barcode detected or error occurred"
-    thread {
-        output = readFromBarcodeScanner()
-    }
-    return output
-}
+//fun prepareThread(): String {
+//    var output = "No barcode detected or error occurred"
+//    thread {
+//        output = readFromBarcodeScanner()
+//    }
+//    return output
+//}
 
 // Fonction pour allumer ou éteindre la LED 17
 fun led17(value: Int) {
