@@ -24,8 +24,11 @@ import java.io.InputStreamReader
 
 import java.io.FileInputStream
 import java.io.IOException
-import kotlin.concurrent.thread
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 @Preview
@@ -64,23 +67,17 @@ fun App() {
                 Text("Angle 180°")
             }
 
-            Button(onClick = { barcodeOutput = prepareThread() }) {
+            Button(onClick = {
+                CoroutineScope(Dispatchers.Main).launch {
+                    barcodeOutput = readFromBarcodeScanner()
+                }
+            }) {
                 Text("Scan Barcode")
             }
 
-            Text(barcodeOutput)
 
         }
     }
-}
-
-fun prepareThread(): String {
-    var output = "No barcode detected or error occurred"
-    val thread = thread {
-        output = readFromBarcodeScanner()
-    }
-    thread.join()
-    return output
 }
 
 // Fonction pour allumer ou éteindre la LED 17
@@ -116,22 +113,24 @@ fun servoAngle(angle: Int) {
 }
 
 // Fonction pour lire un code-barres ou Qr code à partir du scanner
-fun readFromBarcodeScanner(): String {
+suspend fun readFromBarcodeScanner(): String {
     // Fichier du port série
     val portName = "/dev/ttyAMA0"
 
-    return try {
-        // Ouvre un flux d'entrée pour lire les données du port série
-        val inputStream = FileInputStream(portName)
-        val reader = BufferedReader(InputStreamReader(inputStream))
+    return withContext(Dispatchers.IO) {
+        try {
+            // Ouvre un flux d'entrée pour lire les données du port série
+            val inputStream = FileInputStream(portName)
+            val reader = BufferedReader(InputStreamReader(inputStream))
 
-        // Lit une ligne du port série
-        val barcode = reader.readLine()
-        reader.close()
+            // Lit une ligne du port série
+            val barcode = reader.readLine()
+            reader.close()
 
-        barcode ?: "No barcode detected or error occurred"
-    } catch (e: IOException) {
-        println(e)
-        "Error reading barcode"
+            barcode ?: "No barcode detected or error occurred"
+        } catch (e: IOException) {
+            println(e)
+            "Error reading barcode"
+        }
     }
 }
