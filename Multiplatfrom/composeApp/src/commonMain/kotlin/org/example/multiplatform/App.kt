@@ -125,9 +125,9 @@ suspend fun led(value: Int, pin: Int) {
 suspend fun ledBlink(pin: Int, delay: Long) {
     withContext(Dispatchers.IO) {
         try {
-            led(pin, 1)
+            led(1, pin)
             delay(delay)
-            led(pin, 0)
+            led(0, pin)
         } catch (e: Exception) {
             println(e)
         }
