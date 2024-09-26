@@ -1,3 +1,5 @@
+@file:Suppress("SpellCheckingInspection")
+
 package org.example.multiplatform
 
 //import androidx.compose.animation.AnimatedVisibility
@@ -22,15 +24,17 @@ import java.io.InputStreamReader
 
 import java.io.FileInputStream
 import java.io.IOException
-import java.io.InputStream
+import kotlin.concurrent.thread
 
 
 @Composable
 @Preview
 fun App() {
+    // Créé les variables d'état pour les sorties GPIO et les codes-barres
     var gpioOutput by remember { mutableStateOf("Press to get GPIO 27 state") }
     var barcodeOutput by remember { mutableStateOf("Scan a barcode") }
 
+    // Crée une colonne pour afficher les boutons et les textes
     MaterialTheme {
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
 
@@ -60,7 +64,7 @@ fun App() {
                 Text("Angle 180°")
             }
 
-            Button(onClick = { barcodeOutput = readFromBarcodeScanner() }) {
+            Button(onClick = { barcodeOutput = prepareThread() }) {
                 Text("Scan Barcode")
             }
 
@@ -70,6 +74,15 @@ fun App() {
     }
 }
 
+fun prepareThread(): String {
+    var output = "No barcode detected or error occurred"
+    thread {
+        output = readFromBarcodeScanner()
+    }
+    return output
+}
+
+// Fonction pour allumer ou éteindre la LED 17
 fun led17(value: Int) {
     try {
         Runtime.getRuntime().exec("gpioset gpiochip0 17=$value")
@@ -78,6 +91,7 @@ fun led17(value: Int) {
     }
 }
 
+// Fonction pour obtenir l'état du GPIO 27. Execute la commande et lie la sortie
 fun get27(): String {
     return try {
         val process = Runtime.getRuntime().exec("gpioget gpiochip0 27")
@@ -91,6 +105,7 @@ fun get27(): String {
     }
 }
 
+// Fonction pour définir l'angle du servo
 fun servoAngle(angle: Int) {
     try {
         Runtime.getRuntime().exec("pigs s 18 $angle")
@@ -99,23 +114,23 @@ fun servoAngle(angle: Int) {
     }
 }
 
+// Fonction pour lire un code-barres ou Qr code à partir du scanner
 fun readFromBarcodeScanner(): String {
-    val portName = "/dev/ttyAMA0" // Change this to your serial port
+    // Fichier du port série
+    val portName = "/dev/ttyAMA0"
 
     return try {
-        // Open the serial port
+        // Ouvre un flux d'entrée pour lire les données du port série
         val inputStream = FileInputStream(portName)
         val reader = BufferedReader(InputStreamReader(inputStream))
 
-        // Attempt to read barcode data
-        val barcode = reader.readLine() // Read a line from the serial port
+        // Lit une ligne du port série
+        val barcode = reader.readLine()
         reader.close()
 
-        // Return the barcode or a message if null or empty
         barcode ?: "No barcode detected or error occurred"
     } catch (e: IOException) {
         println(e)
         "Error reading barcode"
     }
-
 }
