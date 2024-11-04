@@ -1,0 +1,6 @@
+{
+  "servoPin": 18,
+  "inputPin": 27,
+  "ledPin": 17,
+  "portName": "/dev/ttyACM0"
+}
