@@ -24,9 +24,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+
+import kotlinx.serialization.json.Json
+import java.io.File
+import kotlinx.serialization.Serializable
+
 @Composable
 @Preview
 fun App() {
+    val config = loadConfig("config.json")
 
     var gpioOutput by remember { mutableStateOf("Press to get GPIO 27 state") }
     val scan =  Scan("/dev/ttyACM0\"")
@@ -91,4 +97,17 @@ fun App() {
         }
     }
 
+}
+
+@Serializable
+data class Config(
+    val servoPin: Int,
+    val inputPin: Int,
+    val ledPin: Int,
+    val portName: String
+)
+
+fun loadConfig(filePath: String): Config {
+    val jsonContent = File(filePath).readText()
+    return Json.decodeFromString(Config.serializer(), jsonContent)
 }
