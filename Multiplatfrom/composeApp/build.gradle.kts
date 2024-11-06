@@ -52,7 +52,7 @@ kotlin {
 }
 
 android {
-    namespace = "org.example.multiplatform"
+    namespace = "pssa.mobilelocker.demo"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -60,7 +60,7 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "org.example.multiplatform"
+        applicationId = "pssa.mobilelocker.demo"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -90,17 +90,17 @@ android {
 
 tasks.named<Jar>("desktopJar") {
     manifest {
-        attributes["Main-Class"] = "org.example.multiplatform.MainKt"
+        attributes["Main-Class"] = "pssa.mobilelocker.demo.MainKt"
     }
 }
 
 compose.desktop {
     application {
-        mainClass = "org.example.multiplatform.MainKt"
+        mainClass = "pssa.mobilelocker.demo.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "org.example.multiplatform"
+            packageName = "pssa.mobilelocker.demo"
             packageVersion = "1.0.0"
         }
     }
