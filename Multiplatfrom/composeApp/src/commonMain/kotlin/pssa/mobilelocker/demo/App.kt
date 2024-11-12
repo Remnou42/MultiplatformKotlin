@@ -36,7 +36,7 @@ fun App() {
     //val config = configloader.loadConfig("config.json")
 
     var gpioOutput by remember { mutableStateOf("Press to get GPIO 27 state") }
-    val scan =  Scan("/dev/ttyS0")
+    val scan =  Scan("/dev/ttyAMA0")
     val light = Light(1)
     val action = Action(1)
     val detection = Detection(1)

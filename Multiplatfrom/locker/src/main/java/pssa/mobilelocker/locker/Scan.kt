@@ -13,7 +13,7 @@ package pssa.mobilelocker.locker
  */
 class Scan(port: String) {
     var isScanning: Boolean = false
-    var barcodeOutput: String = ""
+    var barcodeOutput: String = "Waiting for barcode..."
     private val portName = port
     private val gpio = Gpio()
 
