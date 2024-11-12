@@ -32,14 +32,14 @@ import java.io.FileOutputStream
 @Composable
 @Preview
 fun App() {
-    val configloader = ConfigLoader()
-    val config = configloader.loadConfig("config.json")
+    //val configloader = ConfigLoader()
+    //val config = configloader.loadConfig("config.json")
 
     var gpioOutput by remember { mutableStateOf("Press to get GPIO 27 state") }
-    val scan =  Scan(config.portName)
-    val light = Light(config.ledPin)
-    val action = Action(config.servoPin)
-    val detection = Detection(config.inputPin)
+    val scan =  Scan("/dev/ttyS0")
+    val light = Light(1)
+    val action = Action(1)
+    val detection = Detection(1)
 
     MaterialTheme {
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
