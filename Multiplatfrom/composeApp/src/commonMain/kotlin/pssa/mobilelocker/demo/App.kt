@@ -23,22 +23,23 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import pssa.mobilelocker.locker.ConfigLoader
 
 
-import kotlinx.serialization.json.Json
-import java.io.File
-import kotlinx.serialization.Serializable
+import java.io.FileOutputStream
+
 
 @Composable
 @Preview
 fun App() {
-    val config = loadConfig("config.json")
+    val configloader = ConfigLoader()
+    val config = configloader.loadConfig("config.json")
 
     var gpioOutput by remember { mutableStateOf("Press to get GPIO 27 state") }
-    val scan =  Scan("/dev/ttyACM0\"")
-    val light = Light(17)
-    val action = Action(18)
-    val detection = Detection(27)
+    val scan =  Scan(config.portName)
+    val light = Light(config.ledPin)
+    val action = Action(config.servoPin)
+    val detection = Detection(config.inputPin)
 
     MaterialTheme {
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -94,20 +95,29 @@ fun App() {
 
             Text(scan.barcodeOutput)
 
+            Button(
+                onClick = {
+                CoroutineScope(Dispatchers.Main).launch {
+                    sendDataToSerialPort("foo")
+                }
+            }) {
+                Text("Send Data to Serial Port")
+            }
+
         }
     }
-
 }
 
-@Serializable
-data class Config(
-    val servoPin: Int,
-    val inputPin: Int,
-    val ledPin: Int,
-    val portName: String
-)
-
-fun loadConfig(filePath: String): Config {
-    val jsonContent = File(filePath).readText()
-    return Json.decodeFromString(Config.serializer(), jsonContent)
+/**
+ * Sends data to the serial port `/dev/serial0`.
+ *
+ * Writes a given string to the serial port, allowing external devices to read the data.
+ *
+ * @param data The data to send to the serial port.
+ */
+fun sendDataToSerialPort(data: String) {
+    val outputStream = FileOutputStream("/dev/serial0")
+    outputStream.write(data.toByteArray())
+    outputStream.flush()
+    outputStream.close()
 }
