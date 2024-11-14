@@ -116,7 +116,7 @@ fun App() {
  * @param data The data to send to the serial port.
  */
 fun sendDataToSerialPort(data: String) {
-    val outputStream = FileOutputStream("/dev/serial0")
+    val outputStream = FileOutputStream("/dev/ttyAMA0")
     outputStream.write(data.toByteArray())
     outputStream.flush()
     outputStream.close()
